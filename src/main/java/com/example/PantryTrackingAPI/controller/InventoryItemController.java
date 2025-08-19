@@ -41,6 +41,17 @@ public class InventoryItemController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
     }
 
+    @GetMapping("/{barcode}")
+    public ResponseEntity<InventoryItemDTO> getInventoryItemByBarcode(
+            @PathVariable String barcode,
+            @AuthenticationPrincipal CustomUserDetails principal) {
+        return repository.findByBarcodeAndOwner(barcode, principal.getUser())
+                .map(InventoryItemDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
+    }
+
+
 
     @PostMapping
     InventoryItemDTO postInventoryItem(@RequestBody InventoryItem item, @AuthenticationPrincipal CustomUserDetails principal){

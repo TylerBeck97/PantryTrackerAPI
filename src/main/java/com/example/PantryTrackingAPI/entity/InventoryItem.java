@@ -11,7 +11,7 @@ public class InventoryItem {
     @Id @GeneratedValue
     private long id;
     private String description;
-    private List<String> barcodes;
+    private String barcode;
     private float quantity;
     private Units units;
     private LocalDate expirationDate;
@@ -23,10 +23,10 @@ public class InventoryItem {
     public InventoryItem() {
     }
 
-    public InventoryItem(String description, List<String> barcodes,
+    public InventoryItem(String description, String barcode,
                          float quantity, Units units, LocalDate expirationDate, User user) {
         this.description = description;
-        this.barcodes = barcodes;
+        this.barcode = barcode;
         this.quantity = quantity;
         this.units = units;
         this.expirationDate = expirationDate;
@@ -50,12 +50,12 @@ public class InventoryItem {
         this.description = description;
     }
 
-    public List<String> getBarcodes() {
-        return barcodes;
+    public String getBarcodes() {
+        return barcode;
     }
 
-    public void setBarcodes(List<String> barcodes) {
-        this.barcodes = barcodes;
+    public void setBarcodes(String barcode) {
+        this.barcode = barcode;
     }
 
     public float getQuantity() {

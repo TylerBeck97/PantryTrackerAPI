@@ -43,7 +43,6 @@ public class SecurityConfig {
                 // Form login handles the redirect to the login page from the
                 // authorization server filter chain
                 .httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults())
                 .userDetailsService(userDetailsService)
                 .authenticationProvider(daoAuthenticationProvider());
 

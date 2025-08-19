@@ -44,9 +44,9 @@ public class DataLoader {
         ));
 
         inventoryItemRepository.saveAll(List.of(
-                new InventoryItem("Ziti", List.of("111111111111"), 2.0f, Units.KG, testDate, userRepository.findByUsername("user")),
-                new InventoryItem("Butter", List.of("222222222222"), 2.0f, Units.G, testDate, userRepository.findByUsername("admin")),
-                new InventoryItem("Lettuce", List.of("333333333333"), 2.0f, Units.POUND, testDate, userRepository.findByUsername("admin"))
+                new InventoryItem("Ziti", "111111111111", 2.0f, Units.KG, testDate, userRepository.findByUsername("user")),
+                new InventoryItem("Butter", "222222222222", 2.0f, Units.G, testDate, userRepository.findByUsername("admin")),
+                new InventoryItem("Lettuce", "333333333333", 2.0f, Units.POUND, testDate, userRepository.findByUsername("admin"))
         ));
     }
 

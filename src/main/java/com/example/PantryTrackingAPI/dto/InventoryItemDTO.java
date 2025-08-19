@@ -4,9 +4,8 @@ import com.example.PantryTrackingAPI.entity.InventoryItem;
 import com.example.PantryTrackingAPI.enums.Units;
 
 import java.time.LocalDate;
-import java.util.List;
 
-public record InventoryItemDTO(Long id, String description, List<String> barcodes, Float quantity, Units units, LocalDate expirationDate) {
+public record InventoryItemDTO(Long id, String description, String barcode, Float quantity, Units units, LocalDate expirationDate) {
     public static InventoryItemDTO fromEntity(InventoryItem item){
         return new InventoryItemDTO(
                 item.getId(),
