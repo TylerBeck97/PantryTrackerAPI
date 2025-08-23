@@ -1,0 +1,11 @@
+/* Seed Role Table */
+INSERT INTO ROLE (ID, NAME, UPDATED_BY) VALUES (1, "user", "system");
+INSERT INTO ROLE (ID, NAME, UPDATED_BY) VALUES (2, "admin", "system");
+INSERT INTO ROLE (ID, NAME, UPDATED_BY) VALUES (3, "system", "system");
+SELECT * FROM ROLE;
+
+/* Seed data in the USER table */
+INSERT INTO USERS (USERNAME, PASSWORD, EMAIL, PHONE_NUMBER, UPDATED_BY) VALUES ("jebeck", "jebeck-password", "tooeyb6@gmail.com", "9193657265", "system");
+INSERT INTO USERS (USERNAME, PASSWORD, EMAIL, PHONE_NUMBER, UPDATED_BY) VALUES ("wdbeck", "wdbeck-password", "w.david.beck@gmail.com", "9192571569", "system");
+INSERT INTO USERS (USERNAME, PASSWORD, EMAIL, PHONE_NUMBER, UPDATED_BY) VALUES ("tjbeck", "tjbeck-password", "tylerbec@gmail.com", "9193538780", "system");
+SELECT * FROM USERS;
