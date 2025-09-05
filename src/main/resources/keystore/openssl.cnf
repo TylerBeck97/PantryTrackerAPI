@@ -1,0 +1,20 @@
+[ req ]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+prompt = no
+
+[ req_distinguished_name ]
+C = US
+ST = North Carolina
+L = Raleigh
+O = PantryTracker
+OU = PantryTracker
+CN = PantryTracker
+
+[ v3_req ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = localhost
+IP.1 = 192.168.1.100 # Example: Your dev machine's LAN IP
+IP.2 = 10.0.2.2      # For Android emulator localhost access
