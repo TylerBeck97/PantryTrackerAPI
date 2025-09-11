@@ -20,7 +20,7 @@ public class RequestHeaderLoggingFilter implements Filter {
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        System.out.println("📥 Incoming Request Headers:");
+        System.out.println("Incoming Request Headers:");
         Enumeration<String> headerNames = httpRequest.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String header = headerNames.nextElement();
