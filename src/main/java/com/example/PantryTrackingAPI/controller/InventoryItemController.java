@@ -1,7 +1,6 @@
 package com.example.PantryTrackingAPI.controller;
 
-import com.example.PantryTrackingAPI.dto.InventoryItemDTO;
-import com.example.PantryTrackingAPI.entity.InventoryItem;
+import com.example.PantryTrackingAPI.entity.InventoryItems;
 import com.example.PantryTrackingAPI.repository.InventoryItemRepository;
 import com.example.PantryTrackingAPI.security.CustomUserDetails;
 import org.springframework.http.HttpStatus;
@@ -12,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+/*
 @RestController
 @RequestMapping("/inventory-items")
 public class InventoryItemController {
@@ -35,7 +35,6 @@ public class InventoryItemController {
             @AuthenticationPrincipal CustomUserDetails principal) {
 
         return repository.findById(id)
-                .filter(item -> item.getOwner().equals(principal.getUser()))
                 .map(InventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
@@ -91,3 +90,5 @@ public class InventoryItemController {
         repository.delete(item);
     }
 }
+
+ */

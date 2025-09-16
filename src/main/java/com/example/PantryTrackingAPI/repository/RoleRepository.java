@@ -1,8 +1,10 @@
 package com.example.PantryTrackingAPI.repository;
 
-import com.example.PantryTrackingAPI.entity.Role;
+import com.example.PantryTrackingAPI.entity.Roles;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoleRepository extends JpaRepository<Role, Long> {
-    Role findByName(String name);
+import java.util.Optional;
+
+public interface RoleRepository extends JpaRepository<Roles, Long> {
+    Optional<Roles> findByName(String name);
 }

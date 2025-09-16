@@ -1,11 +1,7 @@
 package com.example.PantryTrackingAPI.controller;
 
-import com.example.PantryTrackingAPI.dto.RegisterRequest;
-import com.example.PantryTrackingAPI.entity.User;
 import com.example.PantryTrackingAPI.repository.RoleRepository;
 import com.example.PantryTrackingAPI.repository.UserRepository;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +13,19 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder){
+    public AuthController(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Void> checkAuth(){
+    public ResponseEntity<Void> checkAuth() {
         return ResponseEntity.ok().build();
     }
+}
 
-    @PostMapping("/register")
+    /*@PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         if (userRepository.existsByUsernameOrEmail(request.username(), request.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Username or email already in use");
@@ -46,3 +43,5 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
+
+     */
