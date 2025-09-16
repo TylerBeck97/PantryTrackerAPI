@@ -1,13 +1,10 @@
 package com.example.PantryTrackingAPI.repository;
 
-import com.example.PantryTrackingAPI.entity.InventoryItem;
-import com.example.PantryTrackingAPI.entity.User;
+import com.example.PantryTrackingAPI.entity.InventoryItems;
 import org.springframework.data.repository.CrudRepository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface InventoryItemRepository extends CrudRepository<InventoryItem, Long> {
-    List<InventoryItem> findByOwnerUsername(String username);
-    Optional<InventoryItem> findByBarcodeAndOwner(String barcode, User owner);
+public interface InventoryItemRepository extends CrudRepository<InventoryItems, Long> {
+    Optional<InventoryItems> findByBarcode(String barcode);
 }
