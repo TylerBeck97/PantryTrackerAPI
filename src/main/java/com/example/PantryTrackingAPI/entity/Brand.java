@@ -3,15 +3,16 @@ package com.example.PantryTrackingAPI.entity;
 import jakarta.persistence.*;
 
 @Entity
-public class Brands extends BaseEntity {
+@Table(name = "brands")
+public class Brand extends BaseEntity {
     @Column(unique = true, nullable = false, length = 100)
     private String brandName;
 
-    protected Brands(){
+    protected Brand(){
         // Required by JPA
     }
 
-    public Brands(String brandName, String updatedBy){
+    public Brand(String brandName, String updatedBy){
         super(updatedBy);
         this.brandName = brandName;
     }

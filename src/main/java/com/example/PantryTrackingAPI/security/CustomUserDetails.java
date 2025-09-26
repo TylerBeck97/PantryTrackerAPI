@@ -1,6 +1,6 @@
 package com.example.PantryTrackingAPI.security;
 
-import com.example.PantryTrackingAPI.entity.Users;
+import com.example.PantryTrackingAPI.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,37 +9,37 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CustomUserDetails implements UserDetails {
-    private final Users users;
+    private final User user;
 
-    public CustomUserDetails(Users users){
-        this.users = users;
+    public CustomUserDetails(User user){
+        this.user = user;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return users.getRoles().stream()
+        return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return users.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return users.getUsername();
+        return user.getUsername();
     }
 
     public String getEmail() {
-        return users.getEmail();
+        return user.getEmail();
     }
 
     public String getPhoneNumber() {
-        return users.getPhoneNumber();
+        return user.getPhoneNumber();
     }
 
-    public Users getUser(){
-        return users;
+    public User getUser(){
+        return user;
     }
 }

@@ -43,19 +43,19 @@ public class DataLoader {
     @PostConstruct
     private void loadData(){
         roleRepository.saveAll(List.of(
-                new Roles("user", "system"),
-                new Roles("admin", "system")
+                new Role("ROLE_USER", "system"),
+                new Role("ROLE_ADMIN", "system")
         ));
 
         userRepository.saveAll(List.of(
-                new Users("user", passwordEncoder.encode("password"), "user@email.com", "(919)-555-555",
-                        roleRepository.findByName("user")
+                new User("user", passwordEncoder.encode("password"), "user@email.com", "(919)-555-555",
+                        roleRepository.findByName("ROLE_USER")
                                 .map(Collections::singleton)
                                 .orElse(Collections.emptySet()),
                         "system"),
 
-                new Users("admin", passwordEncoder.encode("password"), "admin@email.com", "(919)-444-4444",
-                        Stream.of("user", "admin")
+                new User("admin", passwordEncoder.encode("password"), "admin@email.com", "(919)-444-4444",
+                        Stream.of("ROLE_USER", "ROLE_ADMIN")
                                 .map(roleRepository::findByName)
                                 .flatMap(Optional::stream)
                                 .collect(Collectors.toSet()),
@@ -64,28 +64,28 @@ public class DataLoader {
         ));
 
         brandsRepository.saveAll(List.of(
-                new Brands("Daisy", "system")
+                new Brand("Daisy", "system")
         ));
 
         categoriesRepository.saveAll(List.of(
-                new Categories("Dairy", "system"),
-                new Categories("Meat", "system"),
-                new Categories("Produce", "system"),
-                new Categories("Staples", "system"),
-                new Categories("Grain", "system"),
-                new Categories("Drinks", "system")
+                new Category("Dairy", "system"),
+                new Category("Meat", "system"),
+                new Category("Produce", "system"),
+                new Category("Staples", "system"),
+                new Category("Grain", "system"),
+                new Category("Drinks", "system")
         ));
 
         var units = new String[]{"mL", "L", "tsp", "tbsp", "fl oz",
                 "cup", "pint", "quart", "gallon", "mg", "g", "kg", "lb", "oz"};
-        var list = new ArrayList<Units>();
+        var list = new ArrayList<Unit>();
         for (String unit : units){
-            list.add(new Units(unit, "system"));
+            list.add(new Unit(unit, "system"));
         }
         unitsRepository.saveAll(list);
 
         inventoryItemRepository.saveAll(List.of(
-                new InventoryItems("0007342000011", "Pure and Natural Sour Cream", new BigDecimal(16),
+                new InventoryItem("0007342000011", "Pure and Natural Sour Cream", new BigDecimal(16),
                         brandsRepository.findByBrandName("Daisy")
                                 .orElseThrow(() -> new IllegalArgumentException("Missing Brand")),
                         categoriesRepository.findByCategoryName("Dairy")
@@ -96,7 +96,7 @@ public class DataLoader {
         ));
 
         usersInventoryItemRepository.saveAll(List.of(
-                new UsersInventoryItem(LocalDate.now(), LocalDate.now().plusDays(30),
+                new UserInventoryItem(LocalDate.now(), LocalDate.now().plusDays(30),
                         userRepository.findByUsername("user"),
                         inventoryItemRepository.findByBarcode("0007342000011")
                                 .orElseThrow(() -> new IllegalArgumentException("Missing Inventory Item")),
