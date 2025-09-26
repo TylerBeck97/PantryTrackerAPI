@@ -1,6 +1,6 @@
 package com.example.PantryTrackingAPI.security;
 
-import com.example.PantryTrackingAPI.entity.Users;
+import com.example.PantryTrackingAPI.entity.User;
 import com.example.PantryTrackingAPI.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -17,11 +17,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = userRepository.findByUsername(username);
-        if (users == null) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new CustomUserDetails(users);
+        return new CustomUserDetails(user);
     }
 }
 

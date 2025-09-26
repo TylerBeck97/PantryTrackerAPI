@@ -7,12 +7,13 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-public class Users extends BaseEntity{
+@Table(name = "users")
+public class User extends BaseEntity{
 
     @Column(length = 64, nullable = false, unique = true)
     private String username;
 
-    @Column(length = 60, nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @Column(length = 320, nullable = false, unique = true)
@@ -28,13 +29,13 @@ public class Users extends BaseEntity{
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
-    private Set<Roles> roles;
+    private Set<Role> roles;
 
-    protected Users() {
+    protected User() {
         // Required by JPA
     }
 
-    public Users(String username, String password, String email, String phoneNumber, Set<Roles> roles, String updatedBy){
+    public User(String username, String password, String email, String phoneNumber, Set<Role> roles, String updatedBy){
         super(updatedBy);
         this.username = username;
         this.password = password;
@@ -51,13 +52,13 @@ public class Users extends BaseEntity{
 
     public String getPhoneNumber() { return phoneNumber; }
 
-    public Set<Roles> getRoles() { return roles; }
+    public Set<Role> getRoles() { return roles; }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Users other = (Users) obj;
+        User other = (User) obj;
         Long id = getId();
         return id.equals(other.getId()) && username.equals(other.username)
                 && email.equals(other.email) && phoneNumber.equals(other.phoneNumber) && password.equals(other.password);

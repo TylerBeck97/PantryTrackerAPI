@@ -1,14 +1,13 @@
 package com.example.PantryTrackingAPI.entity;
 
-import com.example.PantryTrackingAPI.repository.UsersInventoryItemRepository;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-public class UsersInventoryItem extends BaseEntity{
+@Table(name = "user_inventory_items")
+public class UserInventoryItem extends BaseEntity{
 
     @Column(nullable = false)
     private LocalDate purchaseDate;
@@ -21,18 +20,18 @@ public class UsersInventoryItem extends BaseEntity{
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Users user;
+    private User user;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private InventoryItems inventoryItem;
+    private InventoryItem inventoryItem;
 
-    protected UsersInventoryItem(){
+    protected UserInventoryItem(){
         // Required by JPA
     }
 
-    public UsersInventoryItem(LocalDate purchaseDate, LocalDate useByDate, Users user,
-                              InventoryItems inventoryItem, String updatedBy){
+    public UserInventoryItem(LocalDate purchaseDate, LocalDate useByDate, User user,
+                             InventoryItem inventoryItem, String updatedBy){
         super(updatedBy);
         this.purchaseDate = purchaseDate;
         this.useByDate = useByDate;
@@ -48,7 +47,9 @@ public class UsersInventoryItem extends BaseEntity{
 
     public BigDecimal getRemainingQuantity() { return remainingQuantity; }
 
-    public Users getUser() { return user; }
+    public User getUser() { return user; }
 
-    public InventoryItems getInventoryItem() { return inventoryItem; }
+    public void setUser(User user) { this.user = user; }
+
+    public InventoryItem getInventoryItem() { return inventoryItem; }
 }

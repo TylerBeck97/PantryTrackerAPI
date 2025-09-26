@@ -5,18 +5,19 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-public class Roles extends BaseEntity{
+@Table(name = "roles")
+public class Role extends BaseEntity{
     @Column(length = 45, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "roles")
-    private Set<Users> users;
+    private Set<User> users;
 
-    protected Roles() {
+    protected Role() {
         // Required by JPA
     }
 
-    public Roles(String name, String updatedBy) {
+    public Role(String name, String updatedBy) {
         super(updatedBy);
         this.name = name;
     }

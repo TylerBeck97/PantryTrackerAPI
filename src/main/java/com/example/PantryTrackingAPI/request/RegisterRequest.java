@@ -1,4 +1,4 @@
-package com.example.PantryTrackingAPI.dto;
+package com.example.PantryTrackingAPI.request;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -5,7 +5,8 @@ import org.hibernate.annotations.ColumnDefault;
 import java.math.BigDecimal;
 
 @Entity
-public class InventoryItems extends BaseEntity {
+@Table(name = "inventory_items")
+public class InventoryItem extends BaseEntity {
     @ColumnDefault("'NO BARCODE'")
     @Column(length = 13, nullable = false)
     private String barcode;
@@ -18,22 +19,22 @@ public class InventoryItems extends BaseEntity {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Brands brand;
+    private Brand brand;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Categories category;
+    private Category category;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Units unit;
+    private Unit unit;
 
-    protected InventoryItems(){
+    public InventoryItem(){
         // Required by JPA
     }
 
-    public InventoryItems(String barcode, String description, BigDecimal quantity,
-                          Brands brand, Categories category, Units unit, String updatedBy){
+    public InventoryItem(String barcode, String description, BigDecimal quantity,
+                         Brand brand, Category category, Unit unit, String updatedBy){
         super(updatedBy);
         this.barcode = barcode;
         this.description = description;
@@ -49,9 +50,21 @@ public class InventoryItems extends BaseEntity {
 
     public BigDecimal getQuantity() { return quantity; }
 
-    public Brands getBrand() { return brand; }
+    public Brand getBrand() { return brand; }
 
-    public Categories getCategory() { return category; }
+    public Category getCategory() { return category; }
 
-    public Units getUnit() { return unit; }
+    public Unit getUnit() { return unit; }
+
+    public void setBarcode(String barcode) { this.barcode = barcode; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+
+    public void setBrand(Brand brand) { this.brand = brand; }
+
+    public void setCategory(Category category) { this.category = category; }
+
+    public void setUnit(Unit unit) { this.unit = unit; }
 }
