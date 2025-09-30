@@ -26,7 +26,7 @@ public class UserInventoryItem extends BaseEntity{
     @JoinColumn(nullable = false)
     private InventoryItem inventoryItem;
 
-    protected UserInventoryItem(){
+    public UserInventoryItem(){
         // Required by JPA
     }
 
@@ -49,7 +49,15 @@ public class UserInventoryItem extends BaseEntity{
 
     public User getUser() { return user; }
 
+    public InventoryItem getInventoryItem() { return inventoryItem; }
+
+    public void setPurchaseDate(LocalDate purchaseDate) { this.purchaseDate = purchaseDate; }
+
+    public void setUseByDate(LocalDate useByDate) { this.useByDate = useByDate; }
+
+    public void setRemainingQuantity(BigDecimal remainingQuantity) { this.remainingQuantity = remainingQuantity; }
+
     public void setUser(User user) { this.user = user; }
 
-    public InventoryItem getInventoryItem() { return inventoryItem; }
+    public void setInventoryItem(InventoryItem inventoryItem) { this.inventoryItem = inventoryItem; }
 }

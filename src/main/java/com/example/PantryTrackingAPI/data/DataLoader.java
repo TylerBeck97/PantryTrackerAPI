@@ -53,7 +53,6 @@ public class DataLoader {
                                 .map(Collections::singleton)
                                 .orElse(Collections.emptySet()),
                         "system"),
-
                 new User("admin", passwordEncoder.encode("password"), "admin@email.com", "(919)-444-4444",
                         Stream.of("ROLE_USER", "ROLE_ADMIN")
                                 .map(roleRepository::findByName)
@@ -64,7 +63,9 @@ public class DataLoader {
         ));
 
         brandsRepository.saveAll(List.of(
-                new Brand("Daisy", "system")
+                new Brand("Daisy", "system"),
+                new Brand("Jimmy Dean", "system"),
+                new Brand("Generic", "system")
         ));
 
         categoriesRepository.saveAll(List.of(
@@ -89,6 +90,14 @@ public class DataLoader {
                         brandsRepository.findByBrandName("Daisy")
                                 .orElseThrow(() -> new IllegalArgumentException("Missing Brand")),
                         categoriesRepository.findByCategoryName("Dairy")
+                                .orElseThrow(() -> new IllegalArgumentException("Missing Category")),
+                        unitsRepository.findByUnitName("oz")
+                                .orElseThrow(() -> new IllegalArgumentException("Missing Unit")),
+                        "system"),
+                new InventoryItem("0007790011553", "Premium Pork Regular Breakfast Sausage Roll", new BigDecimal(16),
+                        brandsRepository.findByBrandName("Jimmy Dean")
+                                .orElseThrow(() -> new IllegalArgumentException("Missing Brand")),
+                        categoriesRepository.findByCategoryName("Meat")
                                 .orElseThrow(() -> new IllegalArgumentException("Missing Category")),
                         unitsRepository.findByUnitName("oz")
                                 .orElseThrow(() -> new IllegalArgumentException("Missing Unit")),

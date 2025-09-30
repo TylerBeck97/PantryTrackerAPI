@@ -1,29 +1,26 @@
 package com.example.PantryTrackingAPI.controller;
 
-import com.example.PantryTrackingAPI.dto.InventoryItemDTO;
+import com.example.PantryTrackingAPI.dto.UserInventoryItemDTO;
 import com.example.PantryTrackingAPI.entity.*;
-import com.example.PantryTrackingAPI.repository.BrandsRepository;
-import com.example.PantryTrackingAPI.repository.CategoriesRepository;
 import com.example.PantryTrackingAPI.repository.InventoryItemRepository;
-import com.example.PantryTrackingAPI.repository.UnitsRepository;
+import com.example.PantryTrackingAPI.repository.UsersInventoryItemRepository;
 import com.example.PantryTrackingAPI.security.CustomUserDetails;
-import com.example.PantryTrackingAPI.security.CustomUserDetailsService;
 import com.example.PantryTrackingAPI.security.SecurityConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,32 +31,23 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(InventoryItemController.class)
-@AutoConfigureMockMvc(addFilters = false)
-class InventoryItemControllerTest {
+@WebMvcTest(UserInventoryItemController.class)
+@Import(SecurityConfig.class)
+class UserInventoryItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockitoBean
-    private InventoryItemRepository repository;
+    private UsersInventoryItemRepository usersInventoryItemRepository;
 
     @MockitoBean
-    private BrandsRepository brandsRepository;
+    private InventoryItemRepository inventoryItemRepository;
 
-    @MockitoBean
-    private CategoriesRepository categoriesRepository;
-
-    @MockitoBean
-    private UnitsRepository unitsRepository;
-
-    @MockitoBean
-    private CustomUserDetailsService userDetailsService;
-
-    private InventoryItem sampleItem;
-    private String expectedJsonList;
-    private String expectedJson;
     private CustomUserDetails sampleUserDetails;
+    private UserInventoryItem sampleUserInventoryItem;
+    private String expectedJson;
+    private String expectedJsonList;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
@@ -71,54 +59,58 @@ class InventoryItemControllerTest {
         var category = new Category("Test Category", updatedBy);
         var unit = new Unit("Test Unit", updatedBy);
 
-        sampleItem = new InventoryItem(barcode, description, quantity, brand, category, unit, updatedBy);
-        sampleItem.setId(1L); // This is needed for the PUT unit test
+        var inventoryItem = new InventoryItem(barcode,description,quantity,brand,category,unit, updatedBy);
 
-        var inventoryItemDTO = InventoryItemDTO.fromEntity(sampleItem);
-        var objectMapper = new ObjectMapper();
-        expectedJson = objectMapper.writeValueAsString(inventoryItemDTO);
-        expectedJsonList = objectMapper.writeValueAsString(List.of(inventoryItemDTO));
+        var purchaseDate = LocalDate.now();
+        var useByDate = LocalDate.now().plusDays(30);
 
         var roles = Set.of(new Role("ROLE_USER", "system"), new Role("ROLE_ADMIN", "system"));
         var user = new User("test", "password", "test@email.com", "(555)-5555", roles, "system");
         sampleUserDetails = new CustomUserDetails(user);
+        sampleUserInventoryItem = new UserInventoryItem(purchaseDate, useByDate, user, inventoryItem, updatedBy);
+
+        var userInventoryItemDTO = UserInventoryItemDTO.fromEntity(sampleUserInventoryItem);
+
+        var objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        expectedJson = objectMapper.writeValueAsString(userInventoryItemDTO);
+        expectedJsonList = objectMapper.writeValueAsString(List.of(userInventoryItemDTO));
     }
 
     @Test
-    @WithMockUser
-    void getInventoryItems() throws Exception {
-        when(repository.findAll()).thenReturn(List.of(sampleItem));
+    void getUsersInventoryItem() throws Exception{
+        when(usersInventoryItemRepository.findAll()).thenReturn(List.of(sampleUserInventoryItem));
 
-        mockMvc.perform(get("/inventory-items"))
+        mockMvc.perform(get("/user-inventory-items")
+                        .with(authentication(new UsernamePasswordAuthenticationToken(
+                                sampleUserDetails,
+                                null,
+                                sampleUserDetails.getAuthorities()
+                        ))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJsonList));
     }
 
     @Test
-    @WithMockUser
-    void getInventoryItemById() throws Exception {
-        when(repository.findById(1L)).thenReturn(Optional.of(sampleItem));
+    void getUsersInventoryItemById() throws Exception{
+        when(usersInventoryItemRepository.findById(1L)).thenReturn(Optional.of(sampleUserInventoryItem));
 
-        mockMvc.perform(get("/inventory-items/id/1"))
+        mockMvc.perform(get("/user-inventory-items/id/1")
+                        .with(authentication(new UsernamePasswordAuthenticationToken(
+                                sampleUserDetails,
+                                null,
+                                sampleUserDetails.getAuthorities()
+                        ))))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
     @Test
-    @WithMockUser
-    void getInventoryItemByBarcode() throws Exception {
-        when(repository.findByBarcode("1111111111111")).thenReturn(Optional.of(sampleItem));
+    void postUserInventoryItem() throws Exception {
+        when(usersInventoryItemRepository.save(any())).thenReturn(sampleUserInventoryItem);
 
-        mockMvc.perform(get("/inventory-items/barcode/1111111111111"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
-    }
-
-    @Test
-    void postInventoryItem() throws Exception {
-        when(repository.save(any())).thenReturn(sampleItem);
-
-        mockMvc.perform(post("/inventory-items")
+        mockMvc.perform(post("/user-inventory-items")
                         .with(authentication(new UsernamePasswordAuthenticationToken(
                                 sampleUserDetails,
                                 null,
@@ -131,11 +123,11 @@ class InventoryItemControllerTest {
     }
 
     @Test
-    void putInventoryItem() throws Exception {
-        when(repository.findById(1L)).thenReturn(Optional.of(sampleItem));
-        when(repository.save(any())).thenReturn(sampleItem);
+    void putUserInventoryItem() throws Exception {
+        when(usersInventoryItemRepository.findById(1L)).thenReturn(Optional.of(sampleUserInventoryItem));
+        when(usersInventoryItemRepository.save(any())).thenReturn(sampleUserInventoryItem);
 
-        mockMvc.perform(put("/inventory-items/id/1")
+        mockMvc.perform(put("/user-inventory-items/id/1")
                         .with(authentication(new UsernamePasswordAuthenticationToken(
                                 sampleUserDetails,
                                 null,
@@ -148,37 +140,15 @@ class InventoryItemControllerTest {
     }
 
     @Test
-    void putInventoryItemWrongId() throws Exception {
-        when(repository.findById(1L)).thenReturn(Optional.of(sampleItem));
-        when(repository.save(any())).thenReturn(sampleItem);
+    void deleteUserInventoryItem() throws Exception {
+        when(usersInventoryItemRepository.findById(1L)).thenReturn(Optional.of(sampleUserInventoryItem));
 
-        mockMvc.perform(put("/inventory-items/id/2")
+        mockMvc.perform(delete("/user-inventory-items/id/1")
                         .with(authentication(new UsernamePasswordAuthenticationToken(
                                 sampleUserDetails,
                                 null,
                                 sampleUserDetails.getAuthorities()
-                        )))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(expectedJson))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void deleteInventoryItem() throws Exception{
-        when(repository.findById(1L)).thenReturn(Optional.of(sampleItem));
-
-        mockMvc.perform(delete("/inventory-items/id/1"))
+                        ))))
                 .andExpect(status().isOk());
-
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
-    void deleteInventoryItemIDNotFound() throws Exception{
-        when(repository.findById(1L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(delete("/inventory-items/id/1"))
-                .andExpect(status().isNotFound());
     }
 }

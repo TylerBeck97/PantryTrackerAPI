@@ -1,6 +1,6 @@
 package com.example.PantryTrackingAPI.controller;
 
-import com.example.PantryTrackingAPI.dto.InventoryItemsDTO;
+import com.example.PantryTrackingAPI.dto.InventoryItemDTO;
 import com.example.PantryTrackingAPI.entity.Brand;
 import com.example.PantryTrackingAPI.entity.Category;
 import com.example.PantryTrackingAPI.entity.InventoryItem;
@@ -33,46 +33,46 @@ public class InventoryItemController {
     }
 
     @GetMapping
-    Iterable<InventoryItemsDTO> getInventoryItems(){
+    Iterable<InventoryItemDTO> getInventoryItems(){
         return repository.findAll()
                 .stream()
-                .map(InventoryItemsDTO::fromEntity)
+                .map(InventoryItemDTO::fromEntity)
                 .toList();
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<InventoryItemsDTO> getInventoryItemById(
+    public ResponseEntity<InventoryItemDTO> getInventoryItemById(
             @PathVariable long id) {
         return repository.findById(id)
-                .map(InventoryItemsDTO::fromEntity)
+                .map(InventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
     @GetMapping("/barcode/{barcode}")
-    public ResponseEntity<InventoryItemsDTO> getInventoryItemByBarcode(
+    public ResponseEntity<InventoryItemDTO> getInventoryItemByBarcode(
             @PathVariable String barcode) {
         return repository.findByBarcode(barcode)
-                .map(InventoryItemsDTO::fromEntity)
+                .map(InventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<InventoryItemsDTO> postInventoryItem(
-            @RequestBody InventoryItemsDTO request,
+    public ResponseEntity<InventoryItemDTO> postInventoryItem(
+            @RequestBody InventoryItemDTO request,
             @AuthenticationPrincipal CustomUserDetails principal){
         var item = inventoryItemsFromRequest(request, principal.getUsername());
 
-        return new ResponseEntity<>(InventoryItemsDTO.fromEntity(repository.save(item)), HttpStatus.OK);
+        return new ResponseEntity<>(InventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/id/{id}")
-    public ResponseEntity<InventoryItemsDTO> putInventoryItem(
+    public ResponseEntity<InventoryItemDTO> putInventoryItem(
             @PathVariable long id,
-            @RequestBody InventoryItemsDTO request,
+            @RequestBody InventoryItemDTO request,
             @AuthenticationPrincipal CustomUserDetails principal) {
         if (id != request.id()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and payload do not match");
@@ -81,26 +81,24 @@ public class InventoryItemController {
         var item = inventoryItemsFromRequest(request, principal.getUsername());
 
         return repository.findById(id)
-                .map(existing -> new ResponseEntity<>(InventoryItemsDTO.fromEntity(repository.save(item)), HttpStatus.OK))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
+                .map(existing -> new ResponseEntity<>(InventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteInventoryItem(@PathVariable long id) {
-
         var item = repository.findById(id).orElse(null);
 
-        if (item != null){
-            repository.delete(item);
-            return ResponseEntity.ok().build();
+        if (item == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ID not found");
         }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+
+        repository.delete(item);
+        return ResponseEntity.ok().build();
     }
 
-    private InventoryItem inventoryItemsFromRequest(InventoryItemsDTO request, String username){
+    private InventoryItem inventoryItemsFromRequest(InventoryItemDTO request, String username){
         var item = new InventoryItem();
         item.setId(request.id());
         item.setDescription(request.description());
@@ -108,17 +106,17 @@ public class InventoryItemController {
         item.setQuantity(request.quantity());
 
         // Finds brand by name or creates a new one if it doesn't exist
-        Brand brand = brandsRepository.findByBrandName(request.brand())
+        var brand = brandsRepository.findByBrandName(request.brand())
                 .orElseGet(() -> brandsRepository.save(new Brand(request.brand(), username)));
         item.setBrand(brand);
 
         // Same for categories
-        Category category = categoriesRepository.findByCategoryName(request.category())
+        var category = categoriesRepository.findByCategoryName(request.category())
                 .orElseGet(() -> categoriesRepository.save(new Category(request.category(), username)));
         item.setCategory(category);
 
         // Same for units
-        Unit unit = unitsRepository.findByUnitName(request.unit())
+        var unit = unitsRepository.findByUnitName(request.unit())
                 .orElseGet(() -> unitsRepository.save(new Unit(request.unit(), username)));
         item.setUnit(unit);
         item.setUpdatedBy(username);
