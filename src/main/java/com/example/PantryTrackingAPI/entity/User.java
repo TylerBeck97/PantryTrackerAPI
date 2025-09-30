@@ -31,7 +31,7 @@ public class User extends BaseEntity{
     )
     private Set<Role> roles;
 
-    protected User() {
+    public User() {
         // Required by JPA
     }
 
