@@ -20,13 +20,13 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/inventory-items")
 public class InventoryItemController {
-    private final InventoryItemRepository repository;
+    private final InventoryItemRepository inventoryItemRepository;
     private final BrandsRepository brandsRepository;
     private final CategoriesRepository categoriesRepository;
     private final UnitsRepository unitsRepository;
 
-    public InventoryItemController(InventoryItemRepository repository, BrandsRepository brandsRepository, CategoriesRepository categoriesRepository, UnitsRepository unitsRepository) {
-        this.repository = repository;
+    public InventoryItemController(InventoryItemRepository inventoryItemRepository, BrandsRepository brandsRepository, CategoriesRepository categoriesRepository, UnitsRepository unitsRepository) {
+        this.inventoryItemRepository = inventoryItemRepository;
         this.brandsRepository = brandsRepository;
         this.categoriesRepository = categoriesRepository;
         this.unitsRepository = unitsRepository;
@@ -34,7 +34,7 @@ public class InventoryItemController {
 
     @GetMapping
     Iterable<InventoryItemDTO> getInventoryItems(){
-        return repository.findAll()
+        return inventoryItemRepository.findAll()
                 .stream()
                 .map(InventoryItemDTO::fromEntity)
                 .toList();
@@ -43,7 +43,7 @@ public class InventoryItemController {
     @GetMapping("/id/{id}")
     public ResponseEntity<InventoryItemDTO> getInventoryItemById(
             @PathVariable long id) {
-        return repository.findById(id)
+        return inventoryItemRepository.findById(id)
                 .map(InventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
@@ -52,7 +52,7 @@ public class InventoryItemController {
     @GetMapping("/barcode/{barcode}")
     public ResponseEntity<InventoryItemDTO> getInventoryItemByBarcode(
             @PathVariable String barcode) {
-        return repository.findByBarcode(barcode)
+        return inventoryItemRepository.findByBarcode(barcode)
                 .map(InventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
@@ -65,7 +65,7 @@ public class InventoryItemController {
             @AuthenticationPrincipal CustomUserDetails principal){
         var item = inventoryItemsFromRequest(request, principal.getUsername());
 
-        return new ResponseEntity<>(InventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK);
+        return new ResponseEntity<>(InventoryItemDTO.fromEntity(inventoryItemRepository.save(item)), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -80,21 +80,21 @@ public class InventoryItemController {
 
         var item = inventoryItemsFromRequest(request, principal.getUsername());
 
-        return repository.findById(id)
-                .map(existing -> new ResponseEntity<>(InventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK))
+        return inventoryItemRepository.findById(id)
+                .map(existing -> new ResponseEntity<>(InventoryItemDTO.fromEntity(inventoryItemRepository.save(item)), HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/id/{id}")
     public ResponseEntity<Void> deleteInventoryItem(@PathVariable long id) {
-        var item = repository.findById(id).orElse(null);
+        var item = inventoryItemRepository.findById(id).orElse(null);
 
         if (item == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ID not found");
         }
 
-        repository.delete(item);
+        inventoryItemRepository.delete(item);
         return ResponseEntity.ok().build();
     }
 

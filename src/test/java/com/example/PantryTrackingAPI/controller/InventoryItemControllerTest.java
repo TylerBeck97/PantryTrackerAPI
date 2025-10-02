@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -35,7 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(InventoryItemController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@Import(SecurityConfig.class)
 class InventoryItemControllerTest {
 
     @Autowired
@@ -56,10 +55,10 @@ class InventoryItemControllerTest {
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
 
+    private CustomUserDetails sampleUserDetails;
     private InventoryItem sampleItem;
     private String expectedJsonList;
     private String expectedJson;
-    private CustomUserDetails sampleUserDetails;
 
     @BeforeEach
     void setUp() throws JsonProcessingException {

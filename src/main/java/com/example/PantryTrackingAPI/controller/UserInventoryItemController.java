@@ -15,18 +15,18 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/user-inventory-items")
 public class UserInventoryItemController {
-    private final UsersInventoryItemRepository repository;
+    private final UsersInventoryItemRepository usersInventoryItemRepository;
     private final InventoryItemRepository inventoryItemRepository;
 
     public UserInventoryItemController(UsersInventoryItemRepository repository, InventoryItemRepository inventoryItemRepository) {
-        this.repository = repository;
+        this.usersInventoryItemRepository = repository;
         this.inventoryItemRepository = inventoryItemRepository;
     }
 
     @GetMapping
     Iterable<UserInventoryItemDTO> getUsersInventoryItem(
             @AuthenticationPrincipal CustomUserDetails principal){
-        return repository.findByUserUsername(principal.getUsername())
+        return usersInventoryItemRepository.findByUserUsername(principal.getUsername())
                 .stream()
                 .map(UserInventoryItemDTO::fromEntity)
                 .toList();
@@ -37,7 +37,8 @@ public class UserInventoryItemController {
             @PathVariable long id,
             @AuthenticationPrincipal CustomUserDetails principal) {
 
-        return repository.findById(id)
+        return usersInventoryItemRepository.findById(id)
+                .filter(item -> item.getUser().equals(principal.getUser()))
                 .map(UserInventoryItemDTO::fromEntity)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
@@ -52,7 +53,7 @@ public class UserInventoryItemController {
         if (item == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Malformed request");
 
-        return new ResponseEntity<>(UserInventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK);
+        return new ResponseEntity<>(UserInventoryItemDTO.fromEntity(usersInventoryItemRepository.save(item)), HttpStatus.OK);
     }
 
     @PutMapping("/id/{id}")
@@ -62,7 +63,7 @@ public class UserInventoryItemController {
             @AuthenticationPrincipal CustomUserDetails principal) {
 
         var item = userInventoryItemFromRequest(request, principal);
-        if (item == null){
+        if (item == null || item.getId() == null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Malformed request");
         }
 
@@ -70,9 +71,9 @@ public class UserInventoryItemController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and payload do not match");
         }
 
-        return repository.findById(id)
+        return usersInventoryItemRepository.findById(id)
                 .filter(existing -> existing.getUser().equals(principal.getUser()))
-                .map(existing -> new ResponseEntity<>(UserInventoryItemDTO.fromEntity(repository.save(item)), HttpStatus.OK))
+                .map(existing -> new ResponseEntity<>(UserInventoryItemDTO.fromEntity(usersInventoryItemRepository.save(item)), HttpStatus.OK))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied or item not found"));
     }
 
@@ -81,12 +82,12 @@ public class UserInventoryItemController {
             @PathVariable long id,
             @AuthenticationPrincipal CustomUserDetails principal) {
 
-        UserInventoryItem item = repository.findById(id)
+        UserInventoryItem item = usersInventoryItemRepository.findById(id)
                 .filter(i -> i.getUser().equals(principal.getUser()))
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.FORBIDDEN, "Access denied or item not found"));
 
-        repository.delete(item);
+        usersInventoryItemRepository.delete(item);
         return ResponseEntity.ok().build();
     }
 
