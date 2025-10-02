@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Table(name = "inventory_items")
 public class InventoryItem extends BaseEntity {
     @ColumnDefault("'NO BARCODE'")
-    @Column(length = 13, nullable = false)
+    @Column(length = 13, nullable = false, unique = true)
     private String barcode;
 
     @Column(length = 100, nullable = false)
